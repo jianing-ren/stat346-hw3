@@ -1,0 +1,96 @@
+---
+title: "Joe-Jianing-STAT346HW3"
+author: "Jianing Ren and Joe LaRocca"
+date: "28/09/2020"
+output: html_document
+---
+
+## 1
+### a.
+```{r}
+set.seed(100)
+smpl=matrix(rnorm(40000,mean=5,sd=3),nrow=10000,ncol=4)
+unbias=apply(smpl,1,function(x) sum((x-5)^2))
+mean(unbias)
+```
+
+The means of $\sigma^2$ is 35.9, which is roughly $n\sigma^2=36$
+
+### b.
+```{r}
+bias=apply(smpl,1,function(x) sum((x-mean(x))^2))
+mean(bias)
+```
+
+When we use the sample mean instead of using global mean hindsightly, we get 26.88, which is roughly equal to $(n-1)\sigma^2=27$. 
+
+## 2
+
+```{r}
+set.seed(100)
+x=rnorm(100,5,3)
+
+y=sapply(x,function(x)4+3*x+rnorm(100))
+ei=apply(y,1,function(y) sum((y-3*x-4)^2))
+mean(ei)
+```
+
+Indeed, the average sum of squares for the 100 regressions is roughly 98, which is $(n-2)\sigma^2$. In order to get unbiased estimator for $\sigma^2$, divide $\sum{e_i^2}$ by n-2.
+
+## 3 
+
+To prove that $b_1$ is unbiased estimator of $B_1$, we need to show that $E(b_1)=B_1$.
+
+$$
+\begin{aligned}
+E(b_1)&=\sum{k_iE(y_i)}\\
+&=\frac{1}{s_{xx}}\sum(x_i-\bar{x})(\beta_0+\beta_1x_i)\\
+&=\frac{1}{s_{xx}}\sum(x_i\beta_0+\beta_1x_i^2-\beta_0\bar{x}-\beta_1\bar{x}x_i)\\
+&=\frac{1}{s_{xx}}[\beta_0\sum{(x_i-\bar{x})}+\beta_1\sum{x_i(x_i-\bar{x})}]\\
+\end{aligned}
+$$
+
+Note that $\sum{(x_i-\bar{x})}=0$, 
+
+and $\sum{x_i(x_i-\bar{x})}=\sum{x_i^2-\bar{x}\sum{x_i}}=\sum{x_i^2}-n\bar{x}^2=s_{xx}$. 
+
+Therefore, we have $E(b_1)=\frac{1}{s_{xx}}[s_{xx}\beta_1]=\beta_1$. 
+
+## 4
+### ???a
+```{r}
+suppressMessages(library(mosaic))
+bodyfat=read.delim("https://dasl.datadescription.com/download/data/3079")
+set.seed(100)
+res=do(1000)*coef(lm(Weight~Height,data=resample(bodyfat)))[2]
+sd(res[,1])
+```
+
+### b
+$$
+\begin{aligned}
+V(b_1)&=V(\sum{k_iy_i})\\
+&=V(k_1y_1)+...+V(k_ny_n)~(the~y's~are~independent)\\
+&=k_1^2V(y_1)+...+k_n^2V(y_n)\\
+&=\sum{k_i^2}V(y_i)\\
+&=\sigma^2\sum{k_i^2}\\
+&=\sigma^2\frac{\sum{(x_i-\bar{x})^2}}{s_{xx}^2}\\
+&=\sigma^2/s_{xx}\\
+&=\frac{\sum{e_i^2}}{s_{xx}(n-2)}
+\end{aligned}
+$$
+
+### ???c
+```{r}
+get_sxx=function(x)sum((x-mean(x))^2)
+sxx=get_sxx(bodyfat$Height)
+sse=sum(resid(lm(Weight~Height, data=bodyfat))^2)
+sqrt(sse/sxx/(250-2))
+```
+
+## 4
+### a
+
+$$
+
+$$
